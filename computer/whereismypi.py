@@ -23,10 +23,10 @@ def main():
 	parser=argparse.ArgumentParser()
 	parser.add_argument("interface")
 	parser.add_argument("passwd")
-	parser.add_argument("-v6","--ipv6",type="store_true",help="use ipv6 address")
+	parser.add_argument("-v6","--ipv6",action="store_true",help="use ipv6 address")
 	args=parser.parse_args()
 
-	password=parser.passwd
+	password=args.passwd
 	local_addr=''
 	broadcast_addr=''
 	port=9890
@@ -35,13 +35,13 @@ def main():
 		local_addr=netifaces.ifaddresses(args.interface)[netifaces.AF_INET6][0]['addr']
 		broadcast_addr=netifaces.ifaddresses(args.interface)[netifaces.AF_INET6][0]['broadcast']
 		so=socket.socket(socket.AF_INET6,socket.SOCK_DGRAM)
-		so.setsocketopt(socket.SOL_SOCKET,socket.SO_BROADCAST,1)
+		so.setsockopt(socket.SOL_SOCKET,socket.SO_BROADCAST,1)
 		so.bind(('::',port))
 	else:
 		local_addr=netifaces.ifaddresses(args.interface)[netifaces.AF_INET][0]['addr']
 		broadcast_addr=netifaces.ifaddresses(args.interface)[netifaces.AF_INET][0]['broadcast']
 		so=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-		so.setsocketopt(socket.SOL_SOCKET,socket.SO_BROADCAST,1)
+		so.setsockopt(socket.SOL_SOCKET,socket.SO_BROADCAST,1)
 		so.bind(('0.0.0.0',port))
 	message=local_addr+'|'+password
 	so.sendto(message.encode('UTF-8'),(broadcast_addr,port))
