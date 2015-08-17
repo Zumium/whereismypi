@@ -43,10 +43,14 @@ def main():
 		so=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 		so.setsockopt(socket.SOL_SOCKET,socket.SO_BROADCAST,1)
 		so.bind(('0.0.0.0',port))
+	so.settimeout(5)
 	message=local_addr+'|'+password
 	so.sendto(message.encode('UTF-8'),(broadcast_addr,port))
 	so.recv(50) #clean up the echo of the package we just sent
-	print("Raspberry Pi's IP address is {0}".format(so.recv(50).decode('UTF-8')))
+	try:
+		print("Raspberry Pi's IP address is {0}".format(so.recv(50).decode('UTF-8')))
+	except socket.timeout:
+		print('No response. Maybe the password is wrong.\n')
 	so.close()
 
 
